@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+    div#test{ border:#000 1px solid; margin: 20px; padding:10px 40px 40px 40px;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 id="test_status"></h2>
+                <div id="test"></div>                   
+            </div>
+        </div>
+     
+    </div>
+
+
+<script>
+    var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, chD, cdE, correct=0;
+    var questions = [
+        ["What is NOT a core security requirement?", "Authentication", "Authorization", "Availability", "Isolation", "Condfidentiality", "D"],
+        ["Which term best describes testing for security vulnerabilities?", "Lock-down Testing", "Hack Testing", "Penetration Testing", "Code Breaking", "Code Reviews", "C" ],
+        ["What is an example of a confidentiality technology?"],
+        ["What is NOT a type of cyber attack?"],
+        ["What is NOT an example of insufficient data-at-rest protection?", "Browser settings", "Multi-layer authentication", "Cache", "Comments in code", "Hardcoded secrets in code", "B"]    
+    
+    ];
+
+    function _(x) {
+        return document.getElementById(x);
+    }
+
+    function renderQuestion () {
+        test = _("test");
+        if (pos >= questions.length){
+            test.innerHTML = "<h2>You got "+correct+" of "+questions.length+" questions correct</h2>";
+            _("test_status").innerHTML = "Test Completed";
+            pos = 0;
+            correct = 0;
+            return false;
+        }
+        _("test_status").innerHTML = "Question "+(pos+1)+" of "+questions.length;
+        question = questions[pos][0];
+        chA = questions[pos][1];
+        chB = questions[pos][2];
+        chC = questions[pos][3];
+        chD = questions[pos][4];
+        chE = questions[pos][5];
+        test.innerHTML = "<h3>"+question+"</h3>"
+        test.innerHTML += "<input type='radio' name='choices' value='A'> "+chA+"<br>";
+        test.innerHTML += "<input type='radio' name='choices' value='B'> "+chB+"<br>";
+        test.innerHTML += "<input type='radio' name='choices' value='C'> "+chC+"<br>";
+        test.innerHTML += "<input type='radio' name='choices' value='D'> "+chD+"<br>";
+        test.innerHTML += "<input type='radio' name='choices' value='E'> "+chE+"<br><br>";
+        test.innerHTML += "<button onclick='checkAnswer()'>Submit Answer</button>";
+    }
+    function checkAnswer() {
+        choices = document.getElementsByName("choices");
+        for (var i=0; i<choices.length; i++) {
+            if (choices[i].checked) {
+                choice = choices[i].value;
+            }
+        }
+        if (choice == questions[pos][4]) {
+            correct++;
+            alert("You are correct!")
+        } else {
+            alert("You are incorrect!")
+        }
+        pos++;
+        renderQuestion();
+    }
+    window.addEventListener ("load", renderQuestion, false);
+</script>
+
+</body>
+</html>

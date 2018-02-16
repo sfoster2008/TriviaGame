@@ -5,18 +5,179 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
 </head>
 <body>
     
-
         You'll create a trivia form with multiple choice or true/false options (your choice).
-        
         The player will have a limited amount of time to finish the quiz.
-        
         The game ends when the time runs out. The page will reveal the number of questions that players answer correctly and incorrectly.
         Don't let the player pick more than one answer per question.
+    
+    <div class="container">
+        <div class="row">
+                <div class="quiz-app">
+                        <h1 class="title">Cybersecurity Quiz</h1>
+                
+                        <div class="questions"></div>
+                
+                            <ul class="choices">
+                                    <li><div class="question">Which is NOT a core software security requirment?</div></li>
+                                    <input id="answer" type="radio" name="group1" value="wrong"> Authentication<br>
+                                    <input id="answer" type="radio" name="group1" value="wrong"> Availability<br>
+                                    <input id="answer" type="radio" name="group1" value="correct"> Isolation<br>
+                                    <input id="answer" type="radio" name="group1" value="wrong"> Confidentiality<br>
+                                    <input id="answer" type="radio" name="group1" value="wrong"> Integrity<hr>
+                                </ul>
+                        
+                                <button id="start">Start</button>
+                                <button id="next">Next</button>
+                                <span id="count"></span>
+                                <span id="score"></span>
+                </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                 <form name="quiz" method="post" name="buttons" id="quiz" onsubmit="return false">
+
+                    <li><div class="question">Which is NOT a core software security requirment?</div></li>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Authentication<br>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Availability<br>
+                    <input id="answer" type="radio" name="group1" value="correct"> Isolation<br>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Confidentiality<br>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Integrity<hr>
+
+                    <li><div class="question">Which is NOT a core software security requirment?</div></li>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Authentication<br>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Availability<br>
+                    <input id="answer" type="radio" name="group1" value="correct"> Isolation<br>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Confidentiality<br>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Integrity<br>
+
+                    <li><div class="question">Which is NOT a core software security requirment?</div></li>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Authentication<br>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Availability<br>
+                    <input id="answer" type="radio" name="group1" value="correct"> Isolation<br>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Confidentiality<br>
+                    <input id="answer" type="radio" name="group1" value="wrong"> Integrity<br>
+
+                    <button class="submit" onclick="return handleClick();" type="submit">Submit</button>
+
+                    </form>
+            </div>
+        </div>
+
+    </div>
+   
+
+    <p id="demo"></p>
+
+    <script>
+    $(document).ready(function() {
+            // Set the date we're counting down to
+        var countDownDate = new Date("15:37:25").getTime();
         
-        Don't forget to include a countdown timer.
+        // Update the count down every 1 second
+        var x = setInterval(function() {
+        
+            // Get todays date and time
+            var now = new Date().getTime();
+            
+            // Find the distance between now an the count down date
+            var distance = countDownDate - now;
+            
+            // Time calculations for minutes and seconds
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            // Output the result in an element with id="demo"
+            document.getElementById("demo").innerHTML = minutes + "m " + seconds + "s ";
+            
+            // If the count down is over, write some text 
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("demo").innerHTML = "EXPIRED";
+            }
+        }, 1000);
+
+
+
+	var counter = 0;
+	var score = 0;
+
+
+	var quizQuestions = [{
+	question:"In what year was America founded ?",
+	choices:["1775", "1776", "1801","1492"],
+	answer: 1
+},
+{
+	question:"Who did not sign the Declaration of Independence ?",
+	choices:["George Wasington", "Ben Franklin", "John Han****", "Thomas Jefferson"],
+	answer: 0	
+},
+{
+	question:"Who was the only president to serve more than two terms?",
+	choices:["George Washington", "Woodrow Wilson", "Franklin Delano Roosevelt", "James Madison"],
+	answer: 2
+},
+{
+	question:"In what year did America land on the moon ?",
+	choices:["1969", "1965", "1970", "1968"],
+	answer: 0
+},
+{
+	question:"Which country did America buy the Louisiana Purchase from ?",
+	choices:["England", "Spain", "Germany", "France"],
+	answer: 3
+}
+]
+
+	$("#start").click(function() {
+			$("#start").hide()
+			$("#next").show()
+	});	
+	
+	$("#next").on("click", function(){
+		
+				$(".choices, .questions").empty();
+
+	  function incrementCounter(){
+				$( "#count").text(counter);
+			};	
+				
+				$(".questions").append("<h2>" + quizQuestions[counter].question + "</h2>")
+
+	for(var i = 0 ; i < quizQuestions[counter].choices.length;i+=1){
+		$(".choices").append( "<ul>" + "<input type='radio' name='radio' value=' " + i + " '/>" + quizQuestions[counter].choices[i] + "</ul>");
+	}	
+
+incrementCounter();
+counter++
+
+});
+
+		$("body").on("click","input", function() {
+
+					$("input[type='radio']:checked").val();
+
+					var $selectedText=$("input[type='radio']:checked").val();
+
+					if($selectedText===quizQuestions[counter].answer) {
+						score +=1;
+					}
+			
+					if(counter > quizQuestions.length) {  
+					  
+					}
+					
+		})
+	
+});
+
+    </script>
 
 </body>
 </html>
