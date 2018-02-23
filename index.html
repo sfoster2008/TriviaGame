@@ -7,177 +7,139 @@
     <title>Document</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
+    <link rel="stylesheet" type="text/css" href="./assets/css/style.css">
+    <style>
+    div#test{ border:#000 1px solid; margin: 20px; padding:10px 40px 40px 40px;}
+    </style>
 </head>
 <body>
-    
-        You'll create a trivia form with multiple choice or true/false options (your choice).
-        The player will have a limited amount of time to finish the quiz.
-        The game ends when the time runs out. The page will reveal the number of questions that players answer correctly and incorrectly.
-        Don't let the player pick more than one answer per question.
-    
     <div class="container">
-        <div class="row">
-                <div class="quiz-app">
-                        <h1 class="title">Cybersecurity Quiz</h1>
-                
-                        <div class="questions"></div>
-                
-                            <ul class="choices">
-                                    <li><div class="question">Which is NOT a core software security requirment?</div></li>
-                                    <input id="answer" type="radio" name="group1" value="wrong"> Authentication<br>
-                                    <input id="answer" type="radio" name="group1" value="wrong"> Availability<br>
-                                    <input id="answer" type="radio" name="group1" value="correct"> Isolation<br>
-                                    <input id="answer" type="radio" name="group1" value="wrong"> Confidentiality<br>
-                                    <input id="answer" type="radio" name="group1" value="wrong"> Integrity<hr>
-                                </ul>
-                        
-                                <button id="start">Start</button>
-                                <button id="next">Next</button>
-                                <span id="count"></span>
-                                <span id="score"></span>
-                </div>
+
+        <!-- Layout quiz interface -->
+        <div class="jumbotron">
+            <h1>Cybersecurity Trivia Game</h1> 
+            <p>Test your knowledge of software security!</p> 
         </div>
         <div class="row">
             <div class="col-md-12">
-                 <form name="quiz" method="post" name="buttons" id="quiz" onsubmit="return false">
-
-                    <li><div class="question">Which is NOT a core software security requirment?</div></li>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Authentication<br>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Availability<br>
-                    <input id="answer" type="radio" name="group1" value="correct"> Isolation<br>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Confidentiality<br>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Integrity<hr>
-
-                    <li><div class="question">Which is NOT a core software security requirment?</div></li>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Authentication<br>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Availability<br>
-                    <input id="answer" type="radio" name="group1" value="correct"> Isolation<br>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Confidentiality<br>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Integrity<br>
-
-                    <li><div class="question">Which is NOT a core software security requirment?</div></li>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Authentication<br>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Availability<br>
-                    <input id="answer" type="radio" name="group1" value="correct"> Isolation<br>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Confidentiality<br>
-                    <input id="answer" type="radio" name="group1" value="wrong"> Integrity<br>
-
-                    <button class="submit" onclick="return handleClick();" type="submit">Submit</button>
-
-                    </form>
+                <h2 id="test_status"></h2>
+                <div id="test"></div>                   
             </div>
         </div>
+        <div class="row">
+            <div class="col-md-10">
+                <div>Time left = <span id="timer"></span></div>
+            </div>
+            <div class="col-md-2">
+                <button onclick="refresh()">Start Over</button>
+            </div>
 
+        </div>
+     
     </div>
-   
 
-    <p id="demo"></p>
+<script>
 
-    <script>
-    $(document).ready(function() {
-            // Set the date we're counting down to
-        var countDownDate = new Date("15:37:25").getTime();
-        
-        // Update the count down every 1 second
-        var x = setInterval(function() {
-        
-            // Get todays date and time
-            var now = new Date().getTime();
-            
-            // Find the distance between now an the count down date
-            var distance = countDownDate - now;
-            
-            // Time calculations for minutes and seconds
-            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-            
-            // Output the result in an element with id="demo"
-            document.getElementById("demo").innerHTML = minutes + "m " + seconds + "s ";
-            
-            // If the count down is over, write some text 
-            if (distance < 0) {
-                clearInterval(x);
-                document.getElementById("demo").innerHTML = "EXPIRED";
+// Set up variables and cybersecurity question / answer / choice content
+    var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, chD, cdE, correct=0;
+    var questions = [
+        ["What is NOT a core security requirement?", "Authentication", "Authorization", "Availability", "Isolation", "Confidentiality", "D" ],
+        ["Which term best describes testing for security vulnerabilities?", "Lock-down Testing", "Hack Testing", "Penetration Testing", "Code Breaking", "Code Reviews", "C" ],
+        ["Cryptographic protection includes all of the following EXCEPT", "encryption of data when it is processed.", "hashing of data when it is stored.", "hiding of data within other media objects when it is transmitted.", "masking of data when it is displayed.", "putting hard copy print-outs into a lock-box.", "D" ],
+        ["Using multi-factor authentication is effective in mitigating which of the following application security risks?", "Injection flaws", "Cross-Site Scripting (XSS)", "Buffer Overflow", "Man-in-the-Middle", "Timing Errors", "D" ],
+        ["What does TLS stand for?", "Transfer Light Security", "Training Layer Supplement", "Transport Layer Security", "Talent Latency Surprise", "Transport Ligatory Sanitization", "C" ],
+        ["What is NOT an example of insufficient data-at-rest protection?", "Browser settings", "Multi-layer authentication", "Cache", "Comments in code", "Hardcoded secrets in code", "B" ], 
+        ["Verbose error messages and unhandled exceptions can result in which of the following software security threats?", "Spoofing", "Tampering", "Repudiation", "Information Disclosure", "Code Weaponization", "D" ],
+        ["When the runtime permissions of the code are defined as security attributes in the metadata of the code, it is referred to as", "Imperative Syntax Security", "Declarative Syntax Security", "Code Signing", "Code Obfuscation", "Metaphysical Authorization", "B"],
+        ["Exploit code attempt to take control of dangling pointers which", "are references to memory locations of destroyed objects.", "is the non-functional code that is left behind in the source.", "is the payload code that the attacker uploads into memory to execute.", "are references in memory locations that are used prior to being initialized", "resemble code from bootcamp students", "A" ],
+        ["Which of the following is an implementation of the principle of least privilege?", "Sandboxing", "Tokenization", "Versioning", "Concurrency", "Remediation", "A" ],
+    
+    ];
+// Define function as abbreviated term.
+    function _(x) {
+        return document.getElementById(x);
+    }
+// Function to set up question framework and link array content as question, answers, and correct choice.
+    function renderQuestion () {
+        test = _("test");
+        if (pos >= questions.length){
+            test.innerHTML = "<h2>You got "+correct+" of "+questions.length+" questions correct</h2>";
+            _("test_status").innerHTML = "Test Completed";
+            pos = 0;
+            correct = 0;
+            return false;
+        }
+        _("test_status").innerHTML = "Question "+(pos+1)+" of "+questions.length;
+        question = questions[pos][0];
+        chA = questions[pos][1];
+        chB = questions[pos][2];
+        chC = questions[pos][3];
+        chD = questions[pos][4];
+        chE = questions[pos][5];
+
+// Rendering question to the user.
+
+        test.innerHTML = "<h3>"+question+"</h3>"
+        test.innerHTML += "<input type='radio' name='choices' value='A'> "+chA+"<br>";
+        test.innerHTML += "<input type='radio' name='choices' value='B'> "+chB+"<br>";
+        test.innerHTML += "<input type='radio' name='choices' value='C'> "+chC+"<br>";
+        test.innerHTML += "<input type='radio' name='choices' value='D'> "+chD+"<br>";
+        test.innerHTML += "<input type='radio' name='choices' value='E'> "+chE+"<br><br>";
+//  CHecking for user answer.
+        test.innerHTML += "<button onclick='checkAnswer()'>Submit Answer</button>";
+    }
+// Function to check the answer.
+    function checkAnswer() {
+        choices = document.getElementsByName("choices");
+        for (var i=0; i<choices.length; i++) {
+            if (choices[i].checked) {
+                choice = choices[i].value;
             }
-        }, 1000);
+        }
+// Need to verify array value with correct answer information.
+        if (choice == questions[pos][6]) {
+            correct++;
+            alert("You are correct!")
+        } else {
+            alert("You are incorrect!")
+        }
+        pos++;
+        renderQuestion();
+    }
+    window.addEventListener ("load", renderQuestion, false);
+// Set up timer.
+    document.getElementById('timer').innerHTML =
+        03 + ":" + 00;
+        startTimer();
 
+        function startTimer() {
+        var presentTime = document.getElementById('timer').innerHTML;
+        var timeArray = presentTime.split(/[:]+/);
+        var m = timeArray[0];
+        var s = checkSecond((timeArray[1] - 1));
+        if(s==59){m=m-1}
+        // if(m<0){alert('timer completed')}
+        if(m<0) {
+            alert("Time has expired! Try again.")
+            refresh()
+        }
+        
+        document.getElementById('timer').innerHTML =
+            m + ":" + s;
+        setTimeout(startTimer, 1000);
+        }
 
-
-	var counter = 0;
-	var score = 0;
-
-
-	var quizQuestions = [{
-	question:"In what year was America founded ?",
-	choices:["1775", "1776", "1801","1492"],
-	answer: 1
-},
-{
-	question:"Who did not sign the Declaration of Independence ?",
-	choices:["George Wasington", "Ben Franklin", "John Han****", "Thomas Jefferson"],
-	answer: 0	
-},
-{
-	question:"Who was the only president to serve more than two terms?",
-	choices:["George Washington", "Woodrow Wilson", "Franklin Delano Roosevelt", "James Madison"],
-	answer: 2
-},
-{
-	question:"In what year did America land on the moon ?",
-	choices:["1969", "1965", "1970", "1968"],
-	answer: 0
-},
-{
-	question:"Which country did America buy the Louisiana Purchase from ?",
-	choices:["England", "Spain", "Germany", "France"],
-	answer: 3
+        function checkSecond(sec) {
+        if (sec < 10 && sec >= 0) {sec = "0" + sec}; // add zero in front of numbers < 10
+        if (sec < 0) {sec = "59"};
+        return sec;
 }
-]
+// Reset page function
+    function refresh() {
+        location.reload();
+}
 
-	$("#start").click(function() {
-			$("#start").hide()
-			$("#next").show()
-	});	
-	
-	$("#next").on("click", function(){
-		
-				$(".choices, .questions").empty();
-
-	  function incrementCounter(){
-				$( "#count").text(counter);
-			};	
-				
-				$(".questions").append("<h2>" + quizQuestions[counter].question + "</h2>")
-
-	for(var i = 0 ; i < quizQuestions[counter].choices.length;i+=1){
-		$(".choices").append( "<ul>" + "<input type='radio' name='radio' value=' " + i + " '/>" + quizQuestions[counter].choices[i] + "</ul>");
-	}	
-
-incrementCounter();
-counter++
-
-});
-
-		$("body").on("click","input", function() {
-
-					$("input[type='radio']:checked").val();
-
-					var $selectedText=$("input[type='radio']:checked").val();
-
-					if($selectedText===quizQuestions[counter].answer) {
-						score +=1;
-					}
-			
-					if(counter > quizQuestions.length) {  
-					  
-					}
-					
-		})
-	
-});
-
-    </script>
+</script>
 
 </body>
 </html>
